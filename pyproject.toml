@@ -10,6 +10,7 @@ package-mode = false
 python = "^3.9"
 fastapi = "^0.110.0"
 uvicorn = {extras = ["standard"], version = "^0.27.1"}
+rknn-toolkit-lite2 = {url = "https://github.com/rockchip-linux/rknn-toolkit2/raw/master/rknn_toolkit_lite2/packages/rknn_toolkit_lite2-1.6.0-cp39-cp39-linux_aarch64.whl"}
 
 [tool.poetry.scripts]
 serve = "app:app"
