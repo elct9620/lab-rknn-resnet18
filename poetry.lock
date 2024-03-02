@@ -425,7 +425,7 @@ description = "Rockchip Neural Network Toolkit Lite"
 optional = false
 python-versions = "*"
 files = [
-    {file = "rknn_toolkit_lite2-1.6.0-cp39-cp39-linux_aarch64.whl", hash = "sha256:4fe86879e3718cbb4f6642147f876cc3f1887ed965ccb514c16bad8a3646c57f"},
+    {file = "rknn_toolkit_lite2-1.6.0-cp311-cp311-linux_aarch64.whl", hash = "sha256:84c5c02594db637e1513226a88e4634a786fc22ba851fac044b7bb1aa72d804d"},
 ]
 
 [package.dependencies]
@@ -435,7 +435,7 @@ psutil = "*"
 
 [package.source]
 type = "url"
-url = "https://github.com/rockchip-linux/rknn-toolkit2/raw/master/rknn_toolkit_lite2/packages/rknn_toolkit_lite2-1.6.0-cp39-cp39-linux_aarch64.whl"
+url = "https://github.com/rockchip-linux/rknn-toolkit2/raw/v1.6.0/rknn_toolkit_lite2/packages/rknn_toolkit_lite2-1.6.0-cp311-cp311-linux_aarch64.whl"
 
 [[package]]
 name = "ruamel-yaml"
@@ -821,4 +821,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "8682337fe89b17ade273fcff53e042958c9656b5c9cfd29ae5b23de73b6e8633"
+content-hash = "0f035e7d4e2bf047919ac03ad99a52f89d047d7148e1e62565e10c12b2cae251"

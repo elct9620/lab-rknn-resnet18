@@ -1,4 +1,4 @@
-FROM python:3.9 AS builder
+FROM python:3.11 AS builder
 
 ARG RKNN_VERSION=1.6.0
 RUN pip install poetry==1.8.1
@@ -14,7 +14,7 @@ COPY pyproject.toml poetry.lock ./
 RUN poetry install --without dev --no-root && rm -rf $POETRY_CACHE_DIR
 RUN wget https://github.com/rockchip-linux/rknn-toolkit2/raw/v${RKNN_VERSION}/rknpu2/runtime/Linux/librknn_api/aarch64/librknnrt.so -O /usr/lib/librknnrt.so
 
-FROM python:3.9-slim
+FROM gcr.io/distroless/python3-debian12
 
 ENV PYTHONUNBUFFERED True \
     VIRTUAL_ENV=/app/.venv \
