@@ -27,4 +27,4 @@ COPY . /app
 EXPOSE 8080
 
 WORKDIR /app
-ENTRYPOINT ["python", "-m", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8080"]
+ENTRYPOINT ["poetry", "run", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8080"]
