@@ -1,30 +1,36 @@
-FROM python:3.11 AS builder
+FROM debian:12-slim AS build
+RUN apt-get update && \
+    apt-get install --no-install-suggests --no-install-recommends --yes python3-venv pipx gcc wget libpython3-dev && \
+    python3 -m venv /venv && \
+    /venv/bin/pip install --upgrade pip setuptools wheel
+
+FROM build AS build-venv
 
 ARG RKNN_VERSION=1.6.0
-RUN pip install poetry==1.8.1
+ARG POETRY_VERSION=1.8.1
+
+RUN pipx install poetry==${POETRY_VERSION}
 
 ENV POETRY_NO_INTERACTION=1 \
-    POETRY_VIRTUALENVS_IN_PROJECT=1 \
-    POETRY_VIRTUALENVS_CREATE=1 \
+    POETRY_VIRTUALENVS_IN_PROJECT=0 \
+    POETRY_VIRTUALENVS_CREATE=0 \
     POETRY_CACHE_DIR=/tmp/poetry_cache
 
 WORKDIR /app
 
 COPY pyproject.toml poetry.lock ./
-RUN poetry install --without dev --no-root && rm -rf $POETRY_CACHE_DIR
+RUN . /venv/bin/activate && \
+    pipx run poetry install --without dev --no-root && rm -rf $POETRY_CACHE_DIR
 RUN wget https://github.com/rockchip-linux/rknn-toolkit2/raw/v${RKNN_VERSION}/rknpu2/runtime/Linux/librknn_api/aarch64/librknnrt.so -O /usr/lib/librknnrt.so
 
 FROM gcr.io/distroless/python3-debian12
 
-ENV PYTHONUNBUFFERED True \
-    VIRTUAL_ENV=/app/.venv \
-    PATH="/app/.venv/bin:$PATH"
+ENV PYTHONUNBUFFERED True
 
-COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
-COPY --from=builder /usr/lib/librknnrt.so /usr/lib/librknnrt.so
+COPY --from=build-venv /venv /venv
+COPY --from=build-venv /usr/lib/librknnrt.so /usr/lib/librknnrt.so
 COPY . /app
+WORKDIR /app
 
 EXPOSE 8080
-
-WORKDIR /app
-ENTRYPOINT ["poetry", "run", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8080"]
+ENTRYPOINT ["/venv/bin/uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8080"]
