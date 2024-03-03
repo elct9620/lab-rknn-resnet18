@@ -1,3 +1,4 @@
+import re
 from typing import Annotated
 from fastapi import FastAPI, Depends
 from rknnlite.api import RKNNLite
@@ -21,4 +22,7 @@ async def model():
 @app.get("/")
 async def root(model: Annotated[RKNNLite, Depends(model)]):
     sdk_version = model.get_sdk_version()
-    return {"sdk_version": sdk_version}
+    api_version = re.search(r'API: (\d+\.\d+\.\d+)', sdk_version).group(1)
+    driver_version = re.search(r'DRV: (\d+\.\d+\.\d+)', sdk_version).group(1)
+
+    return {"api_version": api_version, "driver_version": driver_version}
