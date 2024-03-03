@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rknn-yolov5
+spec:
+  selector:
+    app: rknn-yolov5
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rknn-yolov5
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rknn-yolov5
+  template:
+    metadata:
+      labels:
+        app: rknn-yolov5
+    spec:
+      containers:
+      - name: rknn-yolov5
+        image: ghcr.io/elct9620/lab-knative-rknn-yolov5
+        securityContext:
+          privileged: true
+        resources:
+          limits:
+            rock-chips.com/rknpu: 1
+        ports:
+        - containerPort: 8080
