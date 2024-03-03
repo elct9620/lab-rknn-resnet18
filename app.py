@@ -4,8 +4,9 @@ import cv2
 from typing import Annotated
 from fastapi import FastAPI, Depends, UploadFile
 from rknnlite.api import RKNNLite
+from synset_label import labels
 
-MODEL_PATH = 'yolov5s-640-640.rknn'
+MODEL_PATH = 'resnet18_for_rk3588.rknn'
 
 
 app = FastAPI()
@@ -21,6 +22,21 @@ async def model():
         rknn.release()
 
 
+def top5(result):
+    output = result[0].reshape(-1)
+    # Softmax
+    output = np.exp(output) / np.sum(np.exp(output))
+    # Get the indices of the top 5 largest values
+    output_sorted_indices = np.argsort(output)[::-1][:5]
+
+    selected = []
+    for i, index in enumerate(output_sorted_indices):
+        value = output[index]
+        if value > 0:
+            selected.append(labels[index])
+    return selected
+
+
 @app.get("/")
 async def root(model: Annotated[RKNNLite, Depends(model)]):
     sdk_version = model.get_sdk_version()
@@ -34,10 +50,9 @@ async def inference(model: Annotated[RKNNLite, Depends(model)], image: UploadFil
     image = await image.read()
     image = np.frombuffer(image, dtype=np.uint8)
     image = cv2.imdecode(image, cv2.IMREAD_COLOR)
-    image = cv2.resize(image, (640, 640))
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     image = np.expand_dims(image, axis=0)
 
     outputs = model.inference(inputs=[image])
-    print(outputs[0].shape)
 
-    return {"inference": "ok"}
+    return {"top5": top5(outputs)}

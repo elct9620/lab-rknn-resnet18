@@ -22,7 +22,7 @@ COPY pyproject.toml poetry.lock ./
 RUN . /venv/bin/activate && \
     pipx run poetry install --without dev --no-root && rm -rf $POETRY_CACHE_DIR
 RUN wget https://github.com/rockchip-linux/rknn-toolkit2/raw/v${RKNN_VERSION}/rknpu2/runtime/Linux/librknn_api/aarch64/librknnrt.so -O /usr/lib/librknnrt.so
-RUN wget https://github.com/rockchip-linux/rknn-toolkit2/raw/v${RKNN_VERSION}/rknpu2/examples/rknn_yolov5_demo/model/RK3588/yolov5s-640-640.rknn -O /app/yolov5s-640-640.rknn
+RUN wget https://github.com/rockchip-linux/rknn-toolkit2/raw/v${RKNN_VERSION}/rknpu2/examples/resnet18/resnet18_for_rk3588.rknn -O /app/resnet18_for_rk3588.rknn
 
 FROM gcr.io/distroless/python3-debian12
 
@@ -30,7 +30,7 @@ ENV PYTHONUNBUFFERED True
 
 COPY --from=build-venv /venv /venv
 COPY --from=build-venv /usr/lib/librknnrt.so /usr/lib/librknnrt.so
-COPY --from=build-venv /app/yolov5s-640-640.rknn /app/yolov5s-640-640.rknn
+COPY --from=build-venv /app/resnet18_for_rk3588.rknn /app/resnet18_for_rk3588.rknn
 COPY . /app
 WORKDIR /app
 
