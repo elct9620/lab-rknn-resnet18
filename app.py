@@ -11,7 +11,7 @@ app = FastAPI()
 async def model():
     rknn = RKNNLite()
     try:
-        rknn.load_rknn(model=MODEL_PATH)
+        rknn.load_rknn(MODEL_PATH)
         rknn.init_runtime()
         yield rknn
     finally:
