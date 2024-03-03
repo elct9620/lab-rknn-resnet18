@@ -1,4 +1,5 @@
-from fastapi import FastAPI
+from typing import Annotated
+from fastapi import FastAPI, Depends
 from rknnlite.api import RKNNLite
 
 MODEL_PATH = 'yolov5s-640-640.rknn'
@@ -18,6 +19,6 @@ async def model():
 
 
 @app.get("/")
-async def root(model: RKNNLite = model()):
+async def root(model: Annotated[RKNNLite, Depends(model)]):
     sdk_version = model.get_sdk_version()
     return {"sdk_version": sdk_version}
