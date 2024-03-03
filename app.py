@@ -38,5 +38,6 @@ async def inference(model: Annotated[RKNNLite, Depends(model)], image: UploadFil
     image = np.expand_dims(image, axis=0)
 
     outputs = model.inference(inputs=[image])
+    print(outputs)
 
-    return {"inference": outputs[0]}
+    return {"inference": "ok"}
