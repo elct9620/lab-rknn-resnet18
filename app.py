@@ -1,14 +1,23 @@
 from fastapi import FastAPI
 from rknnlite.api import RKNNLite
 
-DEVICE_COMPATIBLE_NODE = '/proc/device-tree/compatible'
+MODEL_PATH = 'yolov5s-640-640.rknn'
+
 
 app = FastAPI()
 
-@app.get("/")
-async def root():
-    device_compatible_str = ""
-    with open(DEVICE_COMPATIBLE_NODE) as f:
-        device_compatible_str = f.read()
 
-    return {"device_compatible": device_compatible_str}
+async def model():
+    rknn = RKNNLite()
+    try:
+        rknn.load_model(model=MODEL_PATH)
+        rknn.init_runtime()
+        yield rknn
+    finally:
+        rknn.release()
+
+
+@app.get("/")
+async def root(model: RKNNLite = model()):
+    sdk_version = model.get_sdk_version()
+    return {"sdk_version": sdk_version}
